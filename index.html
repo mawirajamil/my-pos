@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#176B45">
 <title>My POS System</title>
 
 <style>
@@ -1046,6 +1048,18 @@ displaySalesHistory();
 displayDashboard();
 
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+        navigator.serviceWorker.register("./service-worker.js")
+            .then(function() {
+                console.log("Offline support activated.");
+            })
+            .catch(function(error) {
+                console.error("Offline setup failed:", error);
+            });
+    });
+}
+</script>
 </body>
   </html>
