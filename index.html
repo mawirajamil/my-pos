@@ -663,8 +663,8 @@ document.getElementById("productForm").addEventListener("submit", function(event
         return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-        alert("Photo is too large. Choose a photo not exceeding 5 MB.");
+    if (file.size > 10 * 1024 * 1024) {
+        alert("Photo is too large. Choose a photo not exceeding 10 MB.");
         return;
     }
 
