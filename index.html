@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My POS System</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f3f5f4;
+    color: #222;
+}
+
+header {
+    background: #176B45;
+    color: white;
+    padding: 18px;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    overflow-x: auto;
+    background: white;
+}
+
+nav button {
+    flex: 1;
+    min-width: 100px;
+    padding: 15px 8px;
+    border: none;
+    background: white;
+    font-weight: bold;
+}
+
+nav button.active {
+    background: #176B45;
+    color: white;
+}
+
+.container {
+    padding: 15px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.primary {
+    background: #176B45;
+    color: white;
+    border: none;
+    padding: 11px 15px;
+    border-radius: 6px;
+}
+
+.danger {
+    background: #c62828;
+    color: white;
+    border: none;
+    padding: 9px 12px;
+    border-radius: 5px;
+}
+
+.secondary {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 9px 12px;
+    border-radius: 5px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 20px 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.dashboard-card h3 {
+    font-size: 14px;
+    color: #666;
+}
+
+.dashboard-card p {
+    font-size: 20px;
+    font-weight: bold;
+    color: #176B45;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 9px;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.product-card img {
+    width: 100%;
+    height: 110px;
+    object-fit: contain;
+}
+
+.product-card h3 {
+    font-size: 15px;
+}
+
+.product-card button {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.cart-box, .form-box {
+    background: white;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 9px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cart-controls button {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+}
+
+.total {
+    font-size: 21px;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #176B45;
+}
+
+.registered-product, .sale-card {
+    background: white;
+    padding: 13px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.registered-product img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+@media (min-width: 700px) {
+    .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>MY POS SYSTEM</h2>
+    <p>Point of Sale Management</p>
+</header>
+
+<nav>
+    <button class="active" onclick="showScreen('dashboard', this)">DASHBOARD</button>
+    <button onclick="showScreen('checkout', this)">CHECKOUT</button>
+    <button onclick="showScreen('management', this)">PRODUCTS</button>
+    <button onclick="showScreen('history', this)">SALES HISTORY</button>
+</nav>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+
+<section id="dashboard" class="screen active">
+
+    <h2>SHOP DASHBOARD</h2>
+
+    <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+            <h3>Today's Sales</h3>
+            <p id="todaySales">KSh 0.00</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Transactions</h3>
+            <p id="todayTransactions">0</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Total Products</h3>
+            <p id="totalProducts">0</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Stock Value</h3>
+            <p id="stockValue">KSh 0.00</p>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- CHECKOUT -->
+
+<section id="checkout" class="screen">
+
+    <h2>CHECKOUT</h2>
+
+    <button class="primary" onclick="startScanner()">
+        SCAN BARCODE
+    </button>
+
+    <div id="reader" style="width:100%; max-width:400px; margin:15px auto;"></div>
+
+    <input
+        type="text"
+        id="search"
+        placeholder="Search product or barcode..."
+        oninput="displayProducts()"
+    >
+
+    <div id="productGrid" class="product-grid"></div>
+
+    <div class="cart-box">
+
+        <h2>SHOPPING CART</h2>
+
+        <div id="cartItems">Your cart is empty.</div>
+
+        <div class="total">
+            TOTAL: KSh <span id="grandTotal">0.00</span>
+        </div>
+
+        <br>
+
+        <button class="primary" onclick="payNow()">PAY NOW</button>
+
+        <button class="danger" onclick="clearCart()">CLEAR CART</button>
+
+    </div>
+</section>
+
+
+<!-- PRODUCTS -->
+
+<section id="management" class="screen">
+
+    <h2>PRODUCT MANAGEMENT</h2>
+
+    <div class="form-box">
+
+        <form id="productForm">
+
+            <input type="hidden" id="productId">
+
+            <label>Product Name</label>
+            <input type="text" id="name" required>
+
+            <label>Category</label>
+            <input type="text" id="category" required>
+
+            <label>Buying Price (KSh)</label>
+            <input type="number" id="buyPrice" min="0" step="0.01" required>
+
+            <label>Selling Price (KSh)</label>
+            <input type="number" id="sellPrice" min="0" step="0.01" required>
+
+            <label>Stock Quantity</label>
+            <input type="number" id="stock" min="0" step="1" required>
+
+            <label>Barcode</label>
+            <input type="text" id="barcode">
+
+            <label>Product Photo</label>
+            <input type="file" id="photo" accept="image/*">
+
+            <button class="primary" type="submit">SAVE PRODUCT</button>
+
+            <button class="secondary" type="button" onclick="resetForm()">CLEAR FORM</button>
+
+        </form>
+    </div>
+
+    <h2>REGISTERED PRODUCTS</h2>
+
+    <div id="managementProducts"></div>
+
+</section>
+
+
+<!-- SALES HISTORY -->
+
+<section id="history" class="screen">
+
+    <h2>SALES HISTORY</h2>
+
+    <div id="salesHistory"></div>
+
+</section>
+
+</div>
+<script>
+
+// DATA STORAGE
+
+let products = JSON.parse(localStorage.getItem("myPOSProducts") || "[]");
+let cart = [];
+let sales = JSON.parse(localStorage.getItem("myPOSSales") || "[]");
+
+function saveProducts() {
+    localStorage.setItem("myPOSProducts", JSON.stringify(products));
+}
+
+function saveSales() {
+    localStorage.setItem("myPOSSales", JSON.stringify(sales));
+}
+
+function money(amount) {
+    return Number(amount).toFixed(2);
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, function(char) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[char];
+    });
+}
+
+
+// NAVIGATION
+
+function showScreen(screen, button) {
+    document.querySelectorAll(".screen").forEach(function(item) {
+        item.classList.remove("active");
+    });
+
+    document.getElementById(screen).classList.add("active");
+
+    document.querySelectorAll("nav button").forEach(function(item) {
+        item.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    displayDashboard();
+    displayProducts();
+    displayCart();
+    displayManagementProducts();
+    displaySalesHistory();
+}
+
+
+// CHECKOUT PRODUCTS
+
+function displayProducts() {
+    let area = document.getElementById("productGrid");
+    let search = document.getElementById("search").value.toLowerCase();
+
+    area.innerHTML = "";
+
+    let filtered = products.filter(function(product) {
+        return product.name.toLowerCase().includes(search) ||
+        String(product.barcode || "").toLowerCase().includes(search);
+    });
+
+    filtered.forEach(function(product) {
+        let card = document.createElement("div");
+        card.className = "product-card";
+
+        card.innerHTML = `
+            ${product.photo ? `<img src="${product.photo}" alt="Product">` : ""}
+            <h3>${escapeHTML(product.name)}</h3>
+            <p>Price: KSh ${money(product.sellPrice)}</p>
+            <p>Stock: ${product.stock}</p>
+            <button class="primary"
+                ${product.stock <= 0 ? "disabled" : ""}
+                onclick="addProduct(${product.id})">
+                ADD
+            </button>
+        `;
+
+        area.appendChild(card);
+    });
+}
+
+
+// ADD PRODUCT TO CART
+
+function addProduct(id) {
+    let product = products.find(function(p) {
+        return p.id === id;
+    });
+
+    if (!product || product.stock <= 0) {
+        alert("Product is out of stock.");
+        return;
+    }
+
+    let existing = cart.find(function(item) {
+        return item.id === id;
+    });
+
+    if (existing) {
+        if (existing.quantity >= product.stock) {
+            alert("Not enough stock available.");
+            return;
+        }
+
+        existing.quantity++;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            buyPrice: product.buyPrice,
+            sellPrice: product.sellPrice,
+            quantity: 1
+        });
+    }
+
+    displayCart();
+}
+
+
+// DISPLAY CART
+
+function displayCart() {
+    let area = document.getElementById("cartItems");
+    area.innerHTML = "";
+
+    if (cart.length === 0) {
+        area.innerHTML = "Your cart is empty.";
+    }
+
+    cart.forEach(function(item) {
+        let row = document.createElement("div");
+        row.className = "cart-item";
+
+        row.innerHTML = `
+            <div>
+                <strong>${escapeHTML(item.name)}</strong>
+                <p>KSh ${money(item.sellPrice)} each</p>
+                <p>Subtotal: KSh ${money(item.sellPrice * item.quantity)}</p>
+            </div>
+
+            <div class="cart-controls">
+                <button onclick="changeQuantity(${item.id}, -1)">−</button>
+                <strong>${item.quantity}</strong>
+                <button onclick="changeQuantity(${item.id}, 1)">+</button>
+                <button class="danger" onclick="removeProduct(${item.id})">X</button>
+            </div>
+        `;
+
+        area.appendChild(row);
+    });
+
+    let total = cart.reduce(function(sum, item) {
+        return sum + item.sellPrice * item.quantity;
+    }, 0);
+
+    document.getElementById("grandTotal").textContent = money(total);
+}
+
+
+// CHANGE QUANTITY
+
+function changeQuantity(id, amount) {
+    let item = cart.find(function(p) {
+        return p.id === id;
+    });
+
+    let product = products.find(function(p) {
+        return p.id === id;
+    });
+
+    if (!item || !product) return;
+
+    let newQuantity = item.quantity + amount;
+
+    if (newQuantity < 1) {
+        removeProduct(id);
+        return;
+    }
+
+    if (newQuantity > product.stock) {
+        alert("Not enough stock available.");
+        return;
+    }
+
+    item.quantity = newQuantity;
+    displayCart();
+}
+
+
+// REMOVE PRODUCT
+
+function removeProduct(id) {
+    cart = cart.filter(function(item) {
+        return item.id !== id;
+    });
+
+    displayCart();
+}
+
+
+// CLEAR CART
+
+function clearCart() {
+    if (cart.length === 0) return;
+
+    if (confirm("Clear the shopping cart?")) {
+        cart = [];
+        displayCart();
+    }
+}
+
+
+// PRODUCT REGISTRATION AND UPDATING
+
+document.getElementById("productForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    let id = document.getElementById("productId").value;
+    let name = document.getElementById("name").value.trim();
+    let category = document.getElementById("category").value.trim();
+
+    let buyPrice = Number(document.getElementById("buyPrice").value);
+    let sellPrice = Number(document.getElementById("sellPrice").value);
+    let stock = Number(document.getElementById("stock").value);
+
+    let barcode = document.getElementById("barcode").value.trim();
+
+    if (!name || !category ||
+        !Number.isFinite(buyPrice) ||
+        !Number.isFinite(sellPrice) ||
+        !Number.isInteger(stock) ||
+        buyPrice < 0 || sellPrice < 0 || stock < 0) {
+
+        alert("Please enter valid product information.");
+        return;
+    }
+
+    let existing = id ? products.find(function(p) {
+        return p.id === Number(id);
+    }) : null;
+
+    if (barcode && products.some(function(p) {
+        return p.barcode === barcode && p.id !== Number(id);
+    })) {
+        alert("This barcode is already registered.");
+        return;
+    }
+
+    let file = document.getElementById("photo").files[0];
+
+    function saveProduct(photo) {
+        if (existing) {
+            existing.name = name;
+            existing.category = category;
+            existing.buyPrice = buyPrice;
+            existing.sellPrice = sellPrice;
+            existing.stock = stock;
+            existing.barcode = barcode;
+
+            if (photo !== undefined) {
+                existing.photo = photo;
+            }
+
+            alert("Product updated successfully!");
+        } else {
+            products.push({
+                id: Date.now(),
+                name: name,
+                category: category,
+                buyPrice: buyPrice,
+                sellPrice: sellPrice,
+                stock: stock,
+                barcode: barcode,
+                photo: photo || ""
+            });
+
+            alert("Product registered successfully!");
+        }
+
+        saveProducts();
+        resetForm();
+
+        displayProducts();
+        displayManagementProducts();
+        displayDashboard();
+    }
+
+    if (file) {
+        if (file.size > 1500000) {
+            alert("Photo is too large. Choose a photo below 1.5 MB.");
+            return;
+        }
+
+        let reader = new FileReader();
+
+        reader.onload = function() {
+            saveProduct(reader.result);
+        };
+
+        reader.onerror = function() {
+            alert("Unable to read the photo.");
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        saveProduct(undefined);
+    }
+});
+
+
+// DISPLAY REGISTERED PRODUCTS
+
+function displayManagementProducts() {
+    let area = document.getElementById("managementProducts");
+    area.innerHTML = "";
+
+    if (products.length === 0) {
+        area.innerHTML = "<p>No products registered.</p>";
+        return;
+    }
+
+    products.forEach(function(product) {
+        let card = document.createElement("div");
+        card.className = "registered-product";
+
+        card.innerHTML = `
+            ${product.photo ? `<img src="${product.photo}" alt="Product">` : ""}
+            <strong>${escapeHTML(product.name)}</strong>
+            <p>Category: ${escapeHTML(product.category)}</p>
+            <p>Buying price: KSh ${money(product.buyPrice)}</p>
+            <p>Selling price: KSh ${money(product.sellPrice)}</p>
+            <p>Stock: ${product.stock}</p>
+            <p>Barcode: ${escapeHTML(product.barcode || "Not registered")}</p>
+
+            <button class="primary" onclick="editProduct(${product.id})">EDIT</button>
+            <button class="danger" onclick="deleteProduct(${product.id})">DELETE</button>
+        `;
+
+        area.appendChild(card);
+    });
+}
+
+
+// EDIT PRODUCT
+
+function editProduct(id) {
+    let product = products.find(function(p) {
+        return p.id === id;
+    });
+
+    if (!product) return;
+
+    document.getElementById("productId").value = product.id;
+    document.getElementById("name").value = product.name;
+    document.getElementById("category").value = product.category;
+    document.getElementById("buyPrice").value = product.buyPrice;
+    document.getElementById("sellPrice").value = product.sellPrice;
+    document.getElementById("stock").value = product.stock;
+    document.getElementById("barcode").value = product.barcode || "";
+    document.getElementById("photo").value = "";
+
+    document.getElementById("name").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+
+// DELETE PRODUCT
+
+function deleteProduct(id) {
+    if (!confirm("Delete this product?")) return;
+
+    products = products.filter(function(p) {
+        return p.id !== id;
+    });
+
+    cart = cart.filter(function(item) {
+        return item.id !== id;
+    });
+
+    saveProducts();
+
+    displayProducts();
+    displayCart();
+    displayManagementProducts();
+    displayDashboard();
+
+    alert("Product deleted.");
+}
+
+
+// RESET FORM
+
+function resetForm() {
+    document.getElementById("productForm").reset();
+    document.getElementById("productId").value = "";
+}
+
+
+// PAYMENT
+
+function payNow() {
+    if (cart.length === 0) {
+        alert("Shopping cart is empty!");
+        return;
+    }
+
+    let total = cart.reduce(function(sum, item) {
+        return sum + item.sellPrice * item.quantity;
+    }, 0);
+
+    let method = prompt(
+        "SELECT PAYMENT METHOD\n\n1. CASH\n2. M-PESA\n\nEnter 1 or 2:"
+    );
+
+    if (method === null) return;
+
+    if (method !== "1" && method !== "2") {
+        alert("Invalid payment method.");
+        return;
+    }
+
+    let payment = prompt(
+        "Total: KSh " + money(total) +
+        "\nEnter amount received:"
+    );
+
+    if (payment === null || payment.trim() === "") return;
+
+    payment = Number(payment);
+
+    if (!Number.isFinite(payment) || payment <= 0) {
+        alert("Enter a valid amount.");
+        return;
+    }
+
+    if (payment < total) {
+        alert(
+            "Insufficient payment!\nAmount remaining: KSh " +
+            money(total - payment)
+        );
+        return;
+    }
+
+    for (let item of cart) {
+        let product = products.find(function(p) {
+            return p.id === item.id;
+        });
+
+        if (!product || product.stock < item.quantity) {
+            alert("Insufficient stock for " + item.name);
+            return;
+        }
+    }
+
+    let change = payment - total;
+
+    cart.forEach(function(item) {
+        let product = products.find(function(p) {
+            return p.id === item.id;
+        });
+
+        product.stock -= item.quantity;
+    });
+
+    let sale = {
+        receiptNumber: "SALE-" + Date.now(),
+        date: new Date().toLocaleString(),
+        dateISO: new Date().toISOString(),
+        method: method === "1" ? "Cash" : "M-PESA",
+        items: cart.map(function(item) {
+            return {...item};
+        }),
+        total: total,
+        received: payment,
+        change: change
+    };
+
+    sales.push(sale);
+
+    saveProducts();
+    saveSales();
+
+    cart = [];
+
+    displayCart();
+    displayProducts();
+    displayManagementProducts();
+    displaySalesHistory();
+    displayDashboard();
+
+    viewReceipt(sale.receiptNumber);
+
+    alert("Sale completed successfully!");
+}
+
+
+// RECEIPT
+
+function viewReceipt(receiptNumber) {
+    let sale = sales.find(function(s) {
+        return s.receiptNumber === receiptNumber;
+    });
+
+    if (!sale) return;
+
+    let receipt = "MY POS SYSTEM\n";
+    receipt += "--------------------------\n";
+    receipt += "Receipt: " + sale.receiptNumber + "\n";
+    receipt += "Date: " + sale.date + "\n";
+    receipt += "Payment: " + sale.method + "\n";
+    receipt += "--------------------------\n\n";
+
+    sale.items.forEach(function(item) {
+        receipt += item.name + "\n";
+        receipt += item.quantity + " x KSh " + money(item.sellPrice) + "\n";
+        receipt += "Subtotal: KSh " + money(item.quantity * item.sellPrice) + "\n\n";
+    });
+
+    receipt += "--------------------------\n";
+    receipt += "TOTAL: KSh " + money(sale.total) + "\n";
+    receipt += "RECEIVED: KSh " + money(sale.received) + "\n";
+    receipt += "CHANGE: KSh " + money(sale.change) + "\n";
+    receipt += "--------------------------\n";
+    receipt += "THANK YOU!\n";
+
+    alert(receipt);
+}
+
+
+// SALES HISTORY
+
+function displaySalesHistory() {
+    let area = document.getElementById("salesHistory");
+    area.innerHTML = "";
+
+    if (sales.length === 0) {
+        area.innerHTML = "<p>No sales recorded yet.</p>";
+        return;
+    }
+
+    [...sales].reverse().forEach(function(sale) {
+        let card = document.createElement("div");
+        card.className = "sale-card";
+
+        card.innerHTML = `
+            <strong>${escapeHTML(sale.receiptNumber)}</strong>
+            <p>${escapeHTML(sale.date)}</p>
+            <p>Payment: ${escapeHTML(sale.method)}</p>
+            <p>Total: KSh ${money(sale.total)}</p>
+
+            <button class="primary"
+                onclick="viewReceipt('${sale.receiptNumber}')">
+                VIEW RECEIPT
+            </button>
+        `;
+
+        area.appendChild(card);
+    });
+}
+
+</script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+let html5QrCode = null;
+let scannerRunning = false;
+
+async function startScanner() {
+    if (typeof Html5Qrcode === "undefined") {
+        alert("Scanner library could not load. Check your internet connection.");
+        return;
+    }
+
+    if (scannerRunning) {
+        await stopScanner();
+        return;
+    }
+
+    try {
+        html5QrCode = new Html5Qrcode("reader");
+
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 250, height: 150 }
+            },
+            async function(decodedText) {
+                let code = String(decodedText).trim();
+
+                document.getElementById("search").value = code;
+
+                let product = products.find(
+                    p => String(p.barcode || "").trim() === code
+                );
+
+                await stopScanner();
+
+                if (product) {
+                    addProduct(product.id);
+                } else {
+                    displayProducts();
+                    alert("This barcode is not registered: " + code);
+                }
+            },
+            function(errorMessage) {
+                // Ignore unsuccessful scan attempts.
+            }
+        );
+
+        scannerRunning = true;
+        document.querySelector(
+            'button[onclick="startScanner()"]'
+        ).textContent = "STOP SCANNER";
+
+    } catch (error) {
+        alert("Could not start camera. Allow camera permission and try again. " + error);
+    }
+}
+
+async function stopScanner() {
+    if (html5QrCode && scannerRunning) {
+        try {
+            await html5QrCode.stop();
+            html5QrCode.clear();
+        } catch (error) {
+            // Scanner may already be stopped.
+        }
+    }
+
+    scannerRunning = false;
+
+    let button = document.querySelector(
+        'button[onclick="startScanner()"]'
+    );
+
+    if (button) {
+        button.textContent = "SCAN BARCODE";
+    }
+}
+
+function displayDashboard() {
+    let today = new Date().toLocaleDateString();
+
+    let todaysSales = sales.filter(sale => {
+        return new Date(sale.date).toLocaleDateString() === today;
+    });
+
+    let totalToday = todaysSales.reduce(
+        (sum, sale) => sum + Number(sale.total || 0), 0
+    );
+
+    let stockValue = products.reduce(
+        (sum, product) =>
+            sum + (Number(product.buyPrice) || 0) *
+            (Number(product.stock) || 0),
+        0
+    );
+
+    document.getElementById("todaySales").textContent = money(totalToday);
+
+    document.getElementById("totalProducts").textContent =
+        products.length;
+
+    document.getElementById("stockValue").textContent =
+        money(stockValue);
+
+    document.getElementById("totalTransactions").textContent =
+        todaysSales.length;
+}
+
+// Load the POS when the page opens.
+displayProducts();
+displayCart();
+displayManagementProducts();
+displaySalesHistory();
+displayDashboard();
+
+</script>
+
+</body>
+  </html>
