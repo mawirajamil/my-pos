@@ -1,10 +1,13 @@
-const CACHE_NAME = "my-pos-v3";
+const CACHE_NAME = "my-pos-v4";
 
 const FILES_TO_CACHE = [
     "./",
     "./index.html",
     "./manifest.json",
-    "./html5-qrcode.min.js"
+    "./html5-qrcode.min.js",
+    "./icon.svg"
+];
+    
 ];
 
 self.addEventListener("install", event => {
