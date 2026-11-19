@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#050505"/>
+
+  <rect x="15" y="15" width="482" height="482"
+        rx="90" fill="none" stroke="#76c828" stroke-width="8"/>
+
+  <!-- Shopping cart -->
+  <path d="M105 105H145L185 290H350L390 155H160"
+        fill="none" stroke="#76c828"
+        stroke-width="25" stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <!-- Barcode -->
+  <g fill="white">
+    <rect x="205" y="175" width="7" height="75"/>
+    <rect x="220" y="175" width="4" height="75"/>
+    <rect x="233" y="175" width="9" height="75"/>
+    <rect x="250" y="175" width="5" height="75"/>
+    <rect x="265" y="175" width="8" height="75"/>
+    <rect x="282" y="175" width="4" height="75"/>
+    <rect x="295" y="175" width="9" height="75"/>
+  </g>
+
+  <!-- Wheels -->
+  <circle cx="205" cy="340" r="25" fill="#76c828"/>
+  <circle cx="335" cy="340" r="25" fill="#76c828"/>
+
+  <!-- Branding -->
+  <text x="256" y="420" text-anchor="middle"
+        font-family="Arial" font-size="55"
+        font-weight="bold" fill="white">MBAJI</text>
+
+  <text x="256" y="465" text-anchor="middle"
+        font-family="Arial" font-size="30"
+        font-weight="bold" fill="#76c828">SHOP</text>
+</svg>
