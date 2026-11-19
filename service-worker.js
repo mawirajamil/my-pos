@@ -1,32 +1,17 @@
-const CACHE_NAME = "my-pos-v2";
+const CACHE_NAME = "my-pos-v3";
 
 const FILES_TO_CACHE = [
     "./",
     "./index.html",
-    "./manifest.json"
+    "./manifest.json",
+    "./html5-qrcode.min.js"
 ];
-
-const SCANNER_LIBRARY =
-    "https://unpkg.com/html5-qrcode";
 
 self.addEventListener("install", event => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(async cache => {
-            await cache.addAll(FILES_TO_CACHE);
-
-            try {
-                const request = new Request(
-                    SCANNER_LIBRARY,
-                    { mode: "no-cors" }
-                );
-
-                const response = await fetch(request);
-
-                await cache.put(request, response);
-            } catch (error) {
-                console.log("Scanner library caching failed:", error);
-            }
-        }).then(() => self.skipWaiting())
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(FILES_TO_CACHE))
+            .then(() => self.skipWaiting())
     );
 });
 
@@ -35,7 +20,10 @@ self.addEventListener("activate", event => {
         caches.keys().then(keys =>
             Promise.all(
                 keys
-                    .filter(key => key !== CACHE_NAME)
+                    .filter(key =>
+                        key.startsWith("my-pos-") &&
+                        key !== CACHE_NAME
+                    )
                     .map(key => caches.delete(key))
             )
         ).then(() => self.clients.claim())
@@ -50,7 +38,14 @@ self.addEventListener("fetch", event => {
             if (cached) return cached;
 
             return fetch(event.request).catch(() => {
-                return caches.match("./index.html");
+                if (event.request.mode === "navigate") {
+                    return caches.match("./index.html");
+                }
+
+                return new Response("", {
+                    status: 503,
+                    statusText: "Offline"
+                });
             });
         })
     );
