@@ -282,6 +282,31 @@ button {
     >
 
     <div id="productGrid" class="product-grid"></div>
+        <hr>
+
+<h3>VISUAL SCAN</h3>
+
+<p>Arrange your products on the counter and scan them using the camera.</p>
+
+<button class="primary" onclick="startVisualCamera()">
+    OPEN CAMERA
+</button>
+
+<div id="visualCamera" style="width:100%; max-width:500px; margin:15px auto;"></div>
+
+<button class="danger" onclick="stopVisualCamera()">
+    CLOSE CAMERA
+</button>
+
+<h3>DETECTED PRODUCTS</h3>
+
+<div id="detectedProducts">
+    No products detected yet.
+</div>
+
+<button class="primary" onclick="confirmVisualProducts()">
+    CONFIRM AND ADD TO CART
+</button>
 
     <hr>
 
