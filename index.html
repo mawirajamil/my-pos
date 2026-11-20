@@ -264,15 +264,20 @@ button {
 
 
 <!-- CHECKOUT -->
-    <section id="checkout" class="screen">
+
+<section id="checkout" class="screen">
 
     <h2>CHECKOUT</h2>
+
+    <!-- BARCODE SCANNER -->
 
     <button class="primary" onclick="startScanner()">
         SCAN BARCODE
     </button>
 
     <div id="reader" style="width:100%; max-width:400px; margin:15px auto;"></div>
+
+    <!-- PRODUCT SEARCH -->
 
     <input
         type="text"
@@ -282,60 +287,12 @@ button {
     >
 
     <div id="productGrid" class="product-grid"></div>
-        <hr>
-
-<h3>VISUAL SCAN</h3>
-
-<p>Arrange your products on the counter and scan them using the camera.</p>
-
-<button class="primary" onclick="startVisualCamera()">
-    OPEN CAMERA
-</button>
-
-<div id="visualCamera" style="width:100%; max-width:500px; margin:15px auto;"></div>
-
-<button class="danger" onclick="stopVisualCamera()">
-    CLOSE CAMERA
-</button>
-
-<h3>DETECTED PRODUCTS</h3>
-
-<div id="detectedProducts">
-    No products detected yet.
-</div>
-
-<button class="primary" onclick="confirmVisualProducts()">
-    CONFIRM AND ADD TO CART
-</button>
 
     <hr>
 
+    <!-- VISUAL SCAN -->
 
-    <div class="cart-box">
-
-        <h2>SHOPPING CART</h2>
-
-        <div id="cartItems">Your cart is empty.</div>
-
-        <div class="total">
-            TOTAL: KSh <span id="grandTotal">0.00</span>
-        </div>
-
-        <br>
-
-        <button class="primary" onclick="payNow()">PAY NOW</button>
-
-        <button class="danger" onclick="clearCart()">CLEAR CART</button>
-
-    </div>
-
-    </section>
-
-<section id="checkout" class="screen">
-
-    <section id="visual" class="screen">
-
-    <h2>VISUAL CHECKOUT</h2>
+    <h3>VISUAL SCAN</h3>
 
     <p>Arrange your products on the counter and scan them using the camera.</p>
 
@@ -359,7 +316,33 @@ button {
         CONFIRM AND ADD TO CART
     </button>
 
-    </section>
+    <hr>
+
+    <!-- SHOPPING CART -->
+
+    <div class="cart-box">
+
+        <h2>SHOPPING CART</h2>
+
+        <div id="cartItems">Your cart is empty.</div>
+
+        <div class="total">
+            TOTAL: KSh <span id="grandTotal">0.00</span>
+        </div>
+
+        <br>
+
+        <button class="primary" onclick="payNow()">
+            PAY NOW
+        </button>
+
+        <button class="danger" onclick="clearCart()">
+            CLEAR CART
+        </button>
+
+    </div>
+
+</section>
 
 
 <!-- PRODUCTS -->
