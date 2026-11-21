@@ -983,7 +983,12 @@ function deleteProduct(id) {
 
 function resetForm() {
     document.getElementById("productForm").reset();
+
     document.getElementById("productId").value = "";
+
+    document.getElementById("sellingOptions").innerHTML = "";
+
+    addSellingOption();
 }
 
 
