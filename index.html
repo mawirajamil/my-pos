@@ -574,7 +574,7 @@ function showSellingOptions(id) {
 
 // ADD PRODUCT TO CART
 
-function addProduct(id) {
+function addProduct(id, optionIndex = 0) {
     let product = products.find(function(p) {
         return p.id === id;
     });
@@ -584,29 +584,59 @@ function addProduct(id) {
         return;
     }
 
+    // Support older products that have no selling options
+    let options = product.sellingOptions || [{
+        name: "Each",
+        quantity: 1,
+        price: product.sellPrice
+    }];
+
+    let option = options[optionIndex];
+
+    if (!option) {
+        alert("Invalid selling option.");
+        return;
+    }
+
+    // Calculate stock already reserved in the cart
+    let reservedStock = cart.reduce(function(total, item) {
+        if (item.id === id) {
+            return total + (item.baseQuantity * item.quantity);
+        }
+        return total;
+    }, 0);
+
+    // Check whether another portion can be added
+    if (reservedStock + option.quantity > product.stock) {
+        alert("Not enough stock available.");
+        return;
+    }
+
+    // Identify this particular selling option
+    let cartKey = id + "-" + optionIndex;
+
     let existing = cart.find(function(item) {
-        return item.id === id;
+        return item.cartKey === cartKey;
     });
 
     if (existing) {
-        if (existing.quantity >= product.stock) {
-            alert("Not enough stock available.");
-            return;
-        }
-
         existing.quantity++;
     } else {
         cart.push({
+            cartKey: cartKey,
             id: product.id,
             name: product.name,
+            optionName: option.name,
+            baseUnit: product.baseUnit || "",
+            baseQuantity: option.quantity,
             buyPrice: product.buyPrice,
-            sellPrice: product.sellPrice,
+            sellPrice: option.price,
             quantity: 1
         });
     }
 
     displayCart();
-}
+    }
 
 
 // DISPLAY CART
