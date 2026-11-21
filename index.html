@@ -518,12 +518,11 @@ function displayProducts() {
         card.innerHTML = `
             ${product.photo ? `<img src="${product.photo}" alt="Product">` : ""}
             <h3>${escapeHTML(product.name)}</h3>
-            <p>Price: KSh ${money(product.sellPrice)}</p>
-            <p>Stock: ${product.stock}</p>
+            <p>Stock: ${product.stock} ${escapeHTML(product.baseUnit || "")}</p>
             <button class="primary"
                 ${product.stock <= 0 ? "disabled" : ""}
-                onclick="addProduct(${product.id})">
-                ADD
+                onclick="showSellingOptions(${product.id})">
+                SELECT PRODUCT
             </button>
         `;
 
@@ -531,6 +530,47 @@ function displayProducts() {
     });
 }
 
+
+    // SHOW SELLING OPTIONS
+
+function showSellingOptions(id) {
+    let product = products.find(function(p) {
+        return p.id === id;
+    });
+
+    if (!product) return;
+
+    let options = product.sellingOptions || [];
+
+    if (options.length === 0) {
+        alert("This product has no selling options. Please edit the product first.");
+        return;
+    }
+
+    let message = "SELECT SELLING OPTION FOR " + product.name + "\n\n";
+
+    options.forEach(function(option, index) {
+        message += (index + 1) + ". " +
+            option.name + " — KSh " +
+            money(option.price) + "\n";
+    });
+
+    let choice = prompt(message + "\nEnter option number:");
+
+    if (choice === null) return;
+
+    let selectedIndex = Number(choice) - 1;
+
+    if (!Number.isInteger(selectedIndex) ||
+        selectedIndex < 0 ||
+        selectedIndex >= options.length) {
+
+        alert("Invalid option selected.");
+        return;
+    }
+
+    addProduct(id, selectedIndex);
+}
 
 // ADD PRODUCT TO CART
 
