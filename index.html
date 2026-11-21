@@ -655,16 +655,21 @@ function displayCart() {
 
         row.innerHTML = `
             <div>
-                <strong>${escapeHTML(item.name)}</strong>
+                <strong>${escapeHTML(item.name)} — ${escapeHTML(item.optionName || "Each")}</strong>
+
                 <p>KSh ${money(item.sellPrice)} each</p>
+
                 <p>Subtotal: KSh ${money(item.sellPrice * item.quantity)}</p>
             </div>
 
             <div class="cart-controls">
-                <button onclick="changeQuantity(${item.id}, -1)">−</button>
+                <button onclick="changeQuantity('${item.cartKey}', -1)">−</button>
+
                 <strong>${item.quantity}</strong>
-                <button onclick="changeQuantity(${item.id}, 1)">+</button>
-                <button class="danger" onclick="removeProduct(${item.id})">X</button>
+
+                <button onclick="changeQuantity('${item.cartKey}', 1)">+</button>
+
+                <button class="danger" onclick="removeProduct('${item.cartKey}')">X</button>
             </div>
         `;
 
