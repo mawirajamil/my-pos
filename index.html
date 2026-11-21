@@ -732,13 +732,13 @@ function changeQuantity(cartKey, amount) {
 
 // REMOVE PRODUCT
 
-function removeProduct(id) {
+function removeProduct(cartKey) {
     cart = cart.filter(function(item) {
-        return item.id !== id;
+        return item.cartKey !== cartKey;
     });
 
     displayCart();
-}
+    }
 
 
 // CLEAR CART
