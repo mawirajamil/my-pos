@@ -1004,22 +1004,47 @@ function displayManagementProducts() {
         let card = document.createElement("div");
         card.className = "registered-product";
 
+        let optionsHTML = "";
+
+        if (product.sellingOptions && product.sellingOptions.length > 0) {
+            optionsHTML = product.sellingOptions.map(function(option) {
+                return `
+                    <p>
+                        ${escapeHTML(option.name)}:
+                        KSh ${money(option.price)}
+                    </p>
+                `;
+            }).join("");
+        } else {
+            optionsHTML = `
+                <p>Each: KSh ${money(product.sellPrice)}</p>
+            `;
+        }
+
         card.innerHTML = `
             ${product.photo ? `<img src="${product.photo}" alt="Product">` : ""}
+
             <strong>${escapeHTML(product.name)}</strong>
+
             <p>Category: ${escapeHTML(product.category)}</p>
+
             <p>Buying price: KSh ${money(product.buyPrice)}</p>
-            <p>Selling price: KSh ${money(product.sellPrice)}</p>
-            <p>Stock: ${product.stock}</p>
+
+            <p><strong>SELLING OPTIONS</strong></p>
+            ${optionsHTML}
+
+            <p>Stock: ${product.stock} ${escapeHTML(product.baseUnit || "")}</p>
+
             <p>Barcode: ${escapeHTML(product.barcode || "Not registered")}</p>
 
             <button class="primary" onclick="editProduct(${product.id})">EDIT</button>
+
             <button class="danger" onclick="deleteProduct(${product.id})">DELETE</button>
         `;
 
         area.appendChild(card);
     });
-}
+    }
 
 
 // EDIT PRODUCT
