@@ -540,11 +540,15 @@ function showSellingOptions(id) {
 
     if (!product) return;
 
-    let options = product.sellingOptions || [];
+    let options = product.sellingOptions;
 
-    if (options.length === 0) {
-        alert("This product has no selling options. Please edit the product first.");
-        return;
+    // Support products registered under the older POS version
+    if (!Array.isArray(options) || options.length === 0) {
+        options = [{
+            name: "Each",
+            quantity: 1,
+            price: Number(product.sellPrice) || 0
+        }];
     }
 
     let message = "SELECT SELLING OPTION FOR " + product.name + "\n\n";
@@ -564,13 +568,17 @@ function showSellingOptions(id) {
     if (!Number.isInteger(selectedIndex) ||
         selectedIndex < 0 ||
         selectedIndex >= options.length) {
-
         alert("Invalid option selected.");
         return;
     }
 
+    // Pass the selected option to the cart
+    if (!product.sellingOptions || product.sellingOptions.length === 0) {
+        product.sellingOptions = options;
+    }
+
     addProduct(id, selectedIndex);
-}
+    }
 
 // ADD PRODUCT TO CART
 
