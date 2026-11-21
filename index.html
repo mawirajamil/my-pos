@@ -513,10 +513,59 @@ function displayProducts() {
         let card = document.createElement("div");
         card.className = "product-card";
 
+        let selectedQuantity = cart.reduce(function(total, item) {
+            return item.id === product.id ? total + item.quantity : total;
+        }, 0);
+
         card.innerHTML = `
-            ${product.photo ? `<img src="${product.photo}" alt="Product">` : ""}
+            <div style="position:relative; display:inline-block; width:100%;">
+                ${product.photo ? `
+                    <img src="${product.photo}" alt="Product"
+                         style="width:100%; display:block;">
+                ` : ""}
+
+                ${selectedQuantity > 0 ? `
+                    <span style="
+                        position:absolute;
+                        top:8px;
+                        left:8px;
+                        width:32px;
+                        height:32px;
+                        border-radius:50%;
+                        background:red;
+                        color:white;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-weight:bold;
+                    ">${selectedQuantity}</span>
+
+                    <button type="button"
+                        onclick="removeOneFromProduct(${product.id})"
+                        style="
+                            position:absolute;
+                            top:8px;
+                            right:8px;
+                            width:32px;
+                            height:32px;
+                            border-radius:50%;
+                            border:none;
+                            background:red;
+                            color:white;
+                            font-size:22px;
+                            font-weight:bold;
+                            cursor:pointer;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            padding:0;
+                        ">−</button>
+                ` : ""}
+            </div>
+
             <h3>${escapeHTML(product.name)}</h3>
             <p>Stock: ${product.stock} ${escapeHTML(product.baseUnit || "")}</p>
+
             <button class="primary"
                 ${product.stock <= 0 ? "disabled" : ""}
                 onclick="showSellingOptions(${product.id})">
@@ -526,7 +575,7 @@ function displayProducts() {
 
         area.appendChild(card);
     });
-}
+    }
 
 
     // SHOW SELLING OPTIONS
