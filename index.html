@@ -1128,35 +1128,51 @@ function payNow() {
         return;
     }
 
-    for (let item of cart) {
+    // Calculate total stock required for each product
+    let stockRequirements = {};
+
+    cart.forEach(function(item) {
+        let quantityToDeduct =
+            (item.baseQuantity || 1) * item.quantity;
+
+        stockRequirements[item.id] =
+            (stockRequirements[item.id] || 0) + quantityToDeduct;
+    });
+
+    // Check stock before completing the sale
+    for (let id in stockRequirements) {
         let product = products.find(function(p) {
-            return p.id === item.id;
+            return p.id === Number(id);
         });
 
-        if (!product || product.stock < item.quantity) {
-            alert("Insufficient stock for " + item.name);
+        if (!product || product.stock < stockRequirements[id]) {
+            alert("Insufficient stock for " +
+                (product ? product.name : "a product"));
             return;
         }
     }
 
     let change = payment - total;
 
-    cart.forEach(function(item) {
+    // Deduct the correct quantity from each product
+    for (let id in stockRequirements) {
         let product = products.find(function(p) {
-            return p.id === item.id;
+            return p.id === Number(id);
         });
 
-        product.stock -= item.quantity;
-    });
+        product.stock -= stockRequirements[id];
+    }
 
     let sale = {
         receiptNumber: "SALE-" + Date.now(),
         date: new Date().toLocaleString(),
         dateISO: new Date().toISOString(),
         method: method === "1" ? "Cash" : "M-PESA",
+
         items: cart.map(function(item) {
             return {...item};
         }),
+
         total: total,
         received: payment,
         change: change
@@ -1178,7 +1194,7 @@ function payNow() {
     viewReceipt(sale.receiptNumber);
 
     alert("Sale completed successfully!");
-}
+    }
 
 
 // RECEIPT
