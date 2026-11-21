@@ -355,34 +355,73 @@ button {
 
         <form id="productForm">
 
-            <input type="hidden" id="productId">
+    <input type="hidden" id="productId">
 
-            <label>Product Name</label>
-            <input type="text" id="name" required>
+    <h3>PRODUCT INFORMATION</h3>
 
-            <label>Category</label>
-            <input type="text" id="category" required>
+    <label>Product Name</label>
+    <input type="text" id="name" required>
 
-            <label>Buying Price (KSh)</label>
-            <input type="number" id="buyPrice" min="0" step="0.01" required>
+    <label>Category</label>
+    <input type="text" id="category" required>
 
-            <label>Selling Price (KSh)</label>
-            <input type="number" id="sellPrice" min="0" step="0.01" required>
+    <label>Barcode</label>
+    <input type="text" id="barcode">
 
-            <label>Stock Quantity</label>
-            <input type="number" id="stock" min="0" step="1" required>
+    <label>Product Photo</label>
+    <input type="file" id="photo" accept="image/*">
 
-            <label>Barcode</label>
-            <input type="text" id="barcode">
+    <hr>
 
-            <label>Product Photo</label>
-            <input type="file" id="photo" accept="image/*">
+    <h3>STOCK AND PURCHASING</h3>
 
-            <button class="primary" type="submit">SAVE PRODUCT</button>
+    <label>Base Unit</label>
+    <select id="baseUnit" required>
+        <option value="">Select base unit</option>
+        <optgroup label="Weight">
+            <option value="kg">Kilogram (kg)</option>
+            <option value="g">Gram (g)</option>
+        </optgroup>
+        <optgroup label="Volume">
+            <option value="L">Litre (L)</option>
+            <option value="ml">Millilitre (ml)</option>
+        </optgroup>
+        <optgroup label="Counting">
+            <option value="piece">Piece</option>
+            <option value="pair">Pair</option>
+            <option value="dozen">Dozen</option>
+        </optgroup>
+        <optgroup label="Length">
+            <option value="m">Metre (m)</option>
+            <option value="cm">Centimetre (cm)</option>
+        </optgroup>
+    </select>
 
-            <button class="secondary" type="button" onclick="resetForm()">CLEAR FORM</button>
+    <label>Available Stock</label>
+    <input type="number" id="stock" min="0" step="any" required>
 
-        </form>
+    <label>Buying Price (KSh)</label>
+    <input type="number" id="buyPrice" min="0" step="0.01" required>
+
+    <hr>
+
+    <h3>SELLING OPTIONS</h3>
+
+    <div id="sellingOptions"></div>
+
+    <button class="secondary" type="button" onclick="addSellingOption()">
+        + ADD SELLING OPTION
+    </button>
+
+    <hr>
+
+    <button class="primary" type="submit">SAVE PRODUCT</button>
+
+    <button class="secondary" type="button" onclick="resetForm()">
+        CLEAR FORM
+    </button>
+
+</form>
     </div>
 
     <h2>REGISTERED PRODUCTS</h2>
