@@ -793,8 +793,31 @@ function removeProduct(cartKey) {
     });
 
     displayCart();
+}
+
+function removeOneFromProduct(productId) {
+    // Find the most recently added cart line for this product
+    let index = -1;
+
+    for (let i = cart.length - 1; i >= 0; i--) {
+        if (cart[i].id === productId) {
+            index = i;
+            break;
+        }
     }
 
+    if (index === -1) return;
+
+    if (cart[index].quantity > 1) {
+        cart[index].quantity--;
+    } else {
+        cart.splice(index, 1);
+    }
+
+    displayCart();
+    displayProducts();
+}
+    
 
 // CLEAR CART
 
