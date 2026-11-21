@@ -1206,7 +1206,7 @@ function viewReceipt(receiptNumber) {
 
     if (!sale) return;
 
-    let receipt = "MY POS SYSTEM\n";
+    let receipt = "MBAJI SHOP POS\n";
     receipt += "--------------------------\n";
     receipt += "Receipt: " + sale.receiptNumber + "\n";
     receipt += "Date: " + sale.date + "\n";
@@ -1214,9 +1214,18 @@ function viewReceipt(receiptNumber) {
     receipt += "--------------------------\n\n";
 
     sale.items.forEach(function(item) {
-        receipt += item.name + "\n";
-        receipt += item.quantity + " x KSh " + money(item.sellPrice) + "\n";
-        receipt += "Subtotal: KSh " + money(item.quantity * item.sellPrice) + "\n\n";
+        receipt += item.name;
+
+        if (item.optionName) {
+            receipt += " - " + item.optionName;
+        }
+
+        receipt += "\n";
+        receipt += item.quantity + " x KSh " +
+            money(item.sellPrice) + "\n";
+
+        receipt += "Subtotal: KSh " +
+            money(item.quantity * item.sellPrice) + "\n\n";
     });
 
     receipt += "--------------------------\n";
@@ -1227,7 +1236,7 @@ function viewReceipt(receiptNumber) {
     receipt += "THANK YOU!\n";
 
     alert(receipt);
-}
+    }
 
 
 // SALES HISTORY
