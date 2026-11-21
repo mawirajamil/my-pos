@@ -662,7 +662,59 @@ function clearCart() {
 }
 
 
-// PRODUCT REGISTRATION AND UPDATING
+// ADD SELLING OPTION
+
+function addSellingOption(name = "", quantity = "", price = "") {
+    let area = document.getElementById("sellingOptions");
+
+    let row = document.createElement("div");
+    row.className = "selling-option-row";
+
+    row.innerHTML = `
+        <label>Option Name</label>
+        <input type="text" class="option-name"
+            placeholder="e.g. Half kg, Whole bar" required>
+
+        <label>Quantity deducted from stock (${escapeHTML(document.getElementById("baseUnit").value || "base unit")})</label>
+        <input type="number" class="option-quantity"
+            min="0.000001" step="any"
+            placeholder="e.g. 0.5" required>
+
+        <label>Selling Price (KSh)</label>
+        <input type="number" class="option-price"
+            min="0" step="0.01"
+            placeholder="Enter selling price" required>
+
+        <button type="button" class="danger remove-option">
+            REMOVE OPTION
+        </button>
+
+        <hr>
+    `;
+
+    row.querySelector(".option-name").value = name;
+    row.querySelector(".option-quantity").value = quantity;
+    row.querySelector(".option-price").value = price;
+
+    row.querySelector(".remove-option").addEventListener("click", function() {
+        row.remove();
+    });
+
+    area.appendChild(row);
+}
+
+
+// UPDATE UNIT LABEL WHEN BASE UNIT CHANGES
+
+document.getElementById("baseUnit").addEventListener("change", function() {
+    document.querySelectorAll(".selling-option-row").forEach(function(row) {
+        row.querySelector("label:nth-of-type(2)").textContent =
+            "Quantity deducted from stock (" + this.value + ")";
+    }, this);
+});
+
+
+// SAVE PRODUCT
 
 document.getElementById("productForm").addEventListener("submit", function(event) {
     event.preventDefault();
@@ -671,19 +723,47 @@ document.getElementById("productForm").addEventListener("submit", function(event
     let name = document.getElementById("name").value.trim();
     let category = document.getElementById("category").value.trim();
 
+    let baseUnit = document.getElementById("baseUnit").value;
     let buyPrice = Number(document.getElementById("buyPrice").value);
-    let sellPrice = Number(document.getElementById("sellPrice").value);
     let stock = Number(document.getElementById("stock").value);
-
     let barcode = document.getElementById("barcode").value.trim();
 
-    if (!name || !category ||
+    let optionRows = document.querySelectorAll(".selling-option-row");
+
+    let sellingOptions = [];
+
+    optionRows.forEach(function(row) {
+        sellingOptions.push({
+            name: row.querySelector(".option-name").value.trim(),
+            quantity: Number(row.querySelector(".option-quantity").value),
+            price: Number(row.querySelector(".option-price").value)
+        });
+    });
+
+    if (!name || !category || !baseUnit ||
         !Number.isFinite(buyPrice) ||
-        !Number.isFinite(sellPrice) ||
-        !Number.isInteger(stock) ||
-        buyPrice < 0 || sellPrice < 0 || stock < 0) {
+        !Number.isFinite(stock) ||
+        buyPrice < 0 || stock < 0) {
 
         alert("Please enter valid product information.");
+        return;
+    }
+
+    if (sellingOptions.length === 0) {
+        alert("Please add at least one selling option.");
+        return;
+    }
+
+    let validOptions = sellingOptions.every(function(option) {
+        return option.name &&
+            Number.isFinite(option.quantity) &&
+            option.quantity > 0 &&
+            Number.isFinite(option.price) &&
+            option.price >= 0;
+    });
+
+    if (!validOptions) {
+        alert("Please check all selling options and enter valid information.");
         return;
     }
 
@@ -704,26 +784,35 @@ document.getElementById("productForm").addEventListener("submit", function(event
         if (existing) {
             existing.name = name;
             existing.category = category;
+            existing.baseUnit = baseUnit;
             existing.buyPrice = buyPrice;
-            existing.sellPrice = sellPrice;
             existing.stock = stock;
             existing.barcode = barcode;
+            existing.sellingOptions = sellingOptions;
 
             if (photo !== undefined) {
                 existing.photo = photo;
             }
 
+            // Keep the old price field for compatibility
+            existing.sellPrice = sellingOptions[0].price;
+
             alert("Product updated successfully!");
+
         } else {
             products.push({
                 id: Date.now(),
                 name: name,
                 category: category,
+                baseUnit: baseUnit,
                 buyPrice: buyPrice,
-                sellPrice: sellPrice,
                 stock: stock,
                 barcode: barcode,
-                photo: photo || ""
+                photo: photo || "",
+                sellingOptions: sellingOptions,
+
+                // Retain compatibility with older POS functions
+                sellPrice: sellingOptions[0].price
             });
 
             alert("Product registered successfully!");
@@ -737,71 +826,77 @@ document.getElementById("productForm").addEventListener("submit", function(event
         displayDashboard();
     }
 
-   if (file) {
-    if (!file.type.startsWith("image/")) {
-        alert("Please select a valid image.");
-        return;
-    }
+    if (file) {
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a valid image.");
+            return;
+        }
 
-    if (file.size > 10 * 1024 * 1024) {
-        alert("Photo is too large. Choose a photo not exceeding 10 MB.");
-        return;
-    }
+        if (file.size > 10 * 1024 * 1024) {
+            alert("Photo is too large. Choose a photo not exceeding 10 MB.");
+            return;
+        }
 
-    let reader = new FileReader();
+        let reader = new FileReader();
 
-    reader.onload = function(event) {
-        let image = new Image();
+        reader.onload = function(event) {
+            let image = new Image();
 
-        image.onload = function() {
-            let maxSize = 1920;
-            let width = image.width;
-            let height = image.height;
+            image.onload = function() {
+                let maxSize = 1920;
+                let width = image.width;
+                let height = image.height;
 
-            if (width > maxSize || height > maxSize) {
-                let ratio = Math.min(
-                    maxSize / width,
-                    maxSize / height
+                if (width > maxSize || height > maxSize) {
+                    let ratio = Math.min(
+                        maxSize / width,
+                        maxSize / height
+                    );
+
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+
+                let canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+
+                let context = canvas.getContext("2d");
+
+                context.drawImage(image, 0, 0, width, height);
+
+                let compressedPhoto = canvas.toDataURL(
+                    "image/jpeg",
+                    0.90
                 );
 
-                width = Math.round(width * ratio);
-                height = Math.round(height * ratio);
-            }
+                saveProduct(compressedPhoto);
+            };
 
-            let canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
+            image.onerror = function() {
+                alert("Unable to process this photo.");
+            };
 
-            let context = canvas.getContext("2d");
-
-            context.drawImage(image, 0, 0, width, height);
-
-            let compressedPhoto = canvas.toDataURL(
-                "image/jpeg",
-                0.90
-            );
-
-            saveProduct(compressedPhoto);
+            image.src = event.target.result;
         };
 
-        image.onerror = function() {
-            alert("Unable to process this photo.");
+        reader.onerror = function() {
+            alert("Unable to read the photo.");
         };
 
-        image.src = event.target.result;
-    };
+        reader.readAsDataURL(file);
 
-    reader.onerror = function() {
-        alert("Unable to read the photo.");
-    };
-
-    reader.readAsDataURL(file);
-
-} else {
-    saveProduct(undefined);
-}
+    } else {
+        saveProduct(undefined);
+    }
 });
 
+
+// ADD THE FIRST SELLING OPTION WHEN THE PAGE LOADS
+
+if (document.getElementById("sellingOptions").children.length === 0) {
+    addSellingOption();
+}
 
 // DISPLAY REGISTERED PRODUCTS
 
