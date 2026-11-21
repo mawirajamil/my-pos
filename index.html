@@ -1034,16 +1034,39 @@ function editProduct(id) {
     document.getElementById("productId").value = product.id;
     document.getElementById("name").value = product.name;
     document.getElementById("category").value = product.category;
+    document.getElementById("baseUnit").value = product.baseUnit || "";
     document.getElementById("buyPrice").value = product.buyPrice;
-    document.getElementById("sellPrice").value = product.sellPrice;
     document.getElementById("stock").value = product.stock;
     document.getElementById("barcode").value = product.barcode || "";
     document.getElementById("photo").value = "";
 
+    let area = document.getElementById("sellingOptions");
+    area.innerHTML = "";
+
+    // Load existing selling options
+    if (product.sellingOptions && product.sellingOptions.length > 0) {
+
+        product.sellingOptions.forEach(function(option) {
+            addSellingOption(
+                option.name,
+                option.quantity,
+                option.price
+            );
+        });
+
+    } else {
+        // Preserve older products that have no selling options
+        addSellingOption(
+            "Each",
+            1,
+            product.sellPrice || 0
+        );
+    }
+
     document.getElementById("name").scrollIntoView({
         behavior: "smooth"
     });
-}
+    }
 
 
 // DELETE PRODUCT
