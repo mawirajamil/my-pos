@@ -1357,7 +1357,7 @@ async function startScanner() {
                 await stopScanner();
 
                 if (product) {
-                    addProduct(product.id);
+                    showSellingOptions(product.id);
                 } else {
                     displayProducts();
                     alert("This barcode is not registered: " + code);
