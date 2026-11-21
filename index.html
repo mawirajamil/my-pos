@@ -686,32 +686,48 @@ function displayCart() {
 
 // CHANGE QUANTITY
 
-function changeQuantity(id, amount) {
+function changeQuantity(cartKey, amount) {
     let item = cart.find(function(p) {
-        return p.id === id;
+        return p.cartKey === cartKey;
     });
+
+    if (!item) return;
 
     let product = products.find(function(p) {
-        return p.id === id;
+        return p.id === item.id;
     });
 
-    if (!item || !product) return;
+    if (!product) return;
 
     let newQuantity = item.quantity + amount;
 
     if (newQuantity < 1) {
-        removeProduct(id);
+        removeProduct(cartKey);
         return;
     }
 
-    if (newQuantity > product.stock) {
+    // Calculate all stock currently reserved for this product
+    let reservedStock = cart.reduce(function(total, cartItem) {
+        if (cartItem.id === product.id) {
+            return total + (cartItem.baseQuantity * cartItem.quantity);
+        }
+
+        return total;
+    }, 0);
+
+    // Calculate stock after this quantity change
+    let newReservedStock = reservedStock +
+        (item.baseQuantity * amount);
+
+    if (newReservedStock > product.stock) {
         alert("Not enough stock available.");
         return;
     }
 
     item.quantity = newQuantity;
+
     displayCart();
-}
+    }
 
 
 // REMOVE PRODUCT
