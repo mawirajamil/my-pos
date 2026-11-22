@@ -525,43 +525,46 @@ function displayProducts() {
                 ` : ""}
 
                 ${selectedQuantity > 0 ? `
-                    <span style="
-                        position:absolute;
-                        top:0;
-                        left:0;
-                        width:32px;
-                        height:32px;
-                        border-radius:50%;
-                        background:red;
-                        color:white;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        font-weight:bold;
-                    ">${selectedQuantity}</span>
+                    <div style="
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    pointer-events:none;
+">
+    <span style="
+        width:32px;
+        height:32px;
+        border-radius:50%;
+        background:red;
+        color:white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:bold;
+    ">${selectedQuantity}</span>
 
-                    <button type="button"
-                        onclick="removeOneFromProduct(${product.id})"
-                        style="
-                            position:absolute;
-                            top:0;
-                            right:0;
-                            width:32px;
-                            height:32px;
-                            line-height: 32px;
-                            border-radius:50%;
-                            border:none;
-                            background:red;
-                            color:white;
-                            font-size:20px;
-                            line-height:32px;
-                            font-weight:bold;
-                            cursor:pointer;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            padding:0;
-                        ">−</button>
+    <button type="button"
+        onclick="removeOneFromProduct(${product.id})"
+        style="
+            width:32px;
+            height:32px;
+            border-radius:50%;
+            border:none;
+            background:red;
+            color:white;
+            font-size:20px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:0;
+            pointer-events:auto;
+        ">−</button>
+</div>
                 ` : ""}
             </div>
 
