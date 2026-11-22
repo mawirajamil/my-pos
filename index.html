@@ -518,10 +518,10 @@ function displayProducts() {
         }, 0);
 
         card.innerHTML = `
-            <div style="position:relative; display:inline-block; width:100%;">
+            <div style="position:relative; width:100%; height:160px;">
                 ${product.photo ? `
                     <img src="${product.photo}" alt="Product"
-                         style="width:100%; display:block;">
+                         style="width:100%; height:160px; object-fit:contain; display:block;"
                 ` : ""}
 
                 ${selectedQuantity > 0 ? `
