@@ -1385,7 +1385,8 @@ function deleteProduct(id) {
 // RESET FORM
 
 function resetForm() {
-    document.getElementById("productForm").reset();
+    document.getElementById("photoStatus").textContent =
+    "No photo selected (optional).";
 
     document.getElementById("productId").value = "";
 
