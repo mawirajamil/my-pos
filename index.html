@@ -1211,6 +1211,26 @@ let file = cameraFile || galleryFile;
     }
 });
 
+// PHOTO SELECTION STATUS
+
+function updatePhotoStatus(input) {
+    let file = input.files[0];
+    if (!file) return;
+
+    document.getElementById("photoStatus").textContent =
+        "Selected: " + file.name;
+}
+
+document.getElementById("photoCamera").addEventListener("change", function() {
+    document.getElementById("photo").value = "";
+    updatePhotoStatus(this);
+});
+
+document.getElementById("photo").addEventListener("change", function() {
+    document.getElementById("photoCamera").value = "";
+    updatePhotoStatus(this);
+});
+
 
 // ADD THE FIRST SELLING OPTION WHEN THE PAGE LOADS
 
