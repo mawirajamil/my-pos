@@ -366,9 +366,30 @@ button {
     <label>Barcode</label>
     <input type="text" id="barcode">
 
-    <label>Product Photo</label>
-    <input type="file" id="photo" accept="image/*">
+    <label>Product Photo (Optional)</label>
 
+<button type="button" class="primary"
+    onclick="document.getElementById('photoCamera').click()">
+    TAKE PHOTO
+</button>
+
+<input type="file"
+    id="photoCamera"
+    accept="image/*"
+    capture="environment"
+    style="display:none;">
+
+<button type="button" class="secondary"
+    onclick="document.getElementById('photo').click()">
+    CHOOSE FROM GALLERY
+</button>
+
+<input type="file"
+    id="photo"
+    accept="image/*"
+    style="display:none;">
+
+<p id="photoStatus">No photo selected (optional).</p>
     <hr>
 
     <h3>STOCK AND PURCHASING</h3>
@@ -1213,40 +1234,75 @@ function displayManagementProducts() {
 
         let optionsHTML = "";
 
-        if (product.sellingOptions && product.sellingOptions.length > 0) {
+        if (product.sellingOptions &&
+            product.sellingOptions.length > 0) {
+
             optionsHTML = product.sellingOptions.map(function(option) {
                 return `
                     <p>
                         ${escapeHTML(option.name)}:
                         KSh ${money(option.price)}
+                        <br>
+                        <small>Deducts ${option.quantity}
+                        ${escapeHTML(product.baseUnit || "")} from stock</small>
                     </p>
                 `;
             }).join("");
+
         } else {
             optionsHTML = `
                 <p>Each: KSh ${money(product.sellPrice)}</p>
             `;
         }
 
+        let stock = Number(product.stock) || 0;
+
+        let stockStatus = stock <= 0
+            ? "<strong style='color:#c62828'>OUT OF STOCK</strong>"
+            : "<strong style='color:#176B45'>IN STOCK</strong>";
+
         card.innerHTML = `
-            ${product.photo ? `<img src="${product.photo}" alt="Product">` : ""}
+            ${product.photo ? `
+                <img src="${product.photo}" alt="Product">
+            ` : ""}
 
-            <strong>${escapeHTML(product.name)}</strong>
+            <h3>${escapeHTML(product.name)}</h3>
 
-            <p>Category: ${escapeHTML(product.category)}</p>
+            <p>
+                Category:
+                ${escapeHTML(product.category || "Not specified")}
+            </p>
 
-            <p>Buying price: KSh ${money(product.buyPrice)}</p>
+            <p>
+                Buying price:
+                KSh ${money(product.buyPrice)}
+            </p>
 
             <p><strong>SELLING OPTIONS</strong></p>
+
             ${optionsHTML}
 
-            <p>Stock: ${product.stock} ${escapeHTML(product.baseUnit || "")}</p>
+            <p>
+                Stock:
+                <strong>${stock} ${escapeHTML(product.baseUnit || "")}</strong>
+            </p>
 
-            <p>Barcode: ${escapeHTML(product.barcode || "Not registered")}</p>
+            <p>${stockStatus}</p>
 
-            <button class="primary" onclick="editProduct(${product.id})">EDIT</button>
+            <p>
+                Barcode:
+                ${escapeHTML(product.barcode || "Not registered")}
+            </p>
 
-            <button class="danger" onclick="deleteProduct(${product.id})">DELETE</button>
+            <button class="primary"
+                onclick="editProduct(${product.id})">
+                EDIT
+            </button>
+
+            <button class="danger"
+                onclick="deleteProduct(${product.id})">
+                DELETE
+            </button>
         `;
 
         area.appendChild(card);
