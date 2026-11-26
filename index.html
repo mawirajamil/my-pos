@@ -500,13 +500,30 @@ function showScreen(screen, button) {
 
 function displayProducts() {
     let area = document.getElementById("productGrid");
-    let search = document.getElementById("search").value.toLowerCase();
+    let search = document.getElementById("search").value
+        .toLowerCase()
+        .trim();
 
     area.innerHTML = "";
 
+    // Split the search into individual words
+    let searchWords = search
+        .split(/\s+/)
+        .filter(Boolean);
+
     let filtered = products.filter(function(product) {
-        return product.name.toLowerCase().includes(search) ||
-        String(product.barcode || "").toLowerCase().includes(search);
+        let name = String(product.name || "").toLowerCase();
+        let barcode = String(product.barcode || "").toLowerCase();
+
+        // Every search word must appear in the product name,
+        // regardless of its position.
+        let nameMatches = searchWords.every(function(word) {
+            return name.includes(word);
+        });
+
+        let barcodeMatches = barcode.includes(search);
+
+        return search === "" || nameMatches || barcodeMatches;
     });
 
     filtered.forEach(function(product) {
@@ -515,14 +532,16 @@ function displayProducts() {
         card.style.cursor = "pointer";
 
         let selectedQuantity = cart.reduce(function(total, item) {
-            return item.id === product.id ? total + item.quantity : total;
+            return item.id === product.id
+                ? total + item.quantity
+                : total;
         }, 0);
 
         card.innerHTML = `
-            <div style="position:relative; width:100%; height:160px;">
+            <div style="position:relative;width:100%;height:160px;">
                 ${product.photo ? `
                     <img src="${product.photo}" alt="Product"
-                         style="width:100%; height:160px; object-fit:contain; display:block;">
+                        style="width:100%;height:160px;object-fit:contain;">
                 ` : ""}
 
                 ${selectedQuantity > 0 ? `
@@ -533,36 +552,21 @@ function displayProducts() {
                         right:0;
                         display:flex;
                         justify-content:space-between;
-                        align-items:flex-start;
-                        pointer-events:none;
                     ">
                         <div style="
-                            width:32px;
-                            height:32px;
-                            border-radius:50%;
-                            background:red;
-                            color:white;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            font-weight:bold;
-                            box-sizing:border-box;
+                            width:32px;height:32px;border-radius:50%;
+                            background:red;color:white;
+                            display:flex;align-items:center;
+                            justify-content:center;font-weight:bold;
                         ">${selectedQuantity}</div>
 
                         <div style="
-                            width:32px;
-                            height:32px;
-                            border-radius:50%;
-                            background:red;
-                            color:white;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            font-size:20px;
-                            box-sizing:border-box;
-                            cursor:pointer;
-                            pointer-events:auto;
-                        " onclick="event.stopPropagation(); removeOneFromProduct(${product.id})">−</div>
+                            width:32px;height:32px;border-radius:50%;
+                            background:red;color:white;
+                            display:flex;align-items:center;
+                            justify-content:center;font-size:20px;
+                        " onclick="event.stopPropagation();
+                            removeOneFromProduct(${product.id})">−</div>
                     </div>
                 ` : ""}
             </div>
@@ -572,7 +576,11 @@ function displayProducts() {
         `;
 
         card.addEventListener("click", function() {
-            if (product.stock <= 0) return;
+            if (product.stock <= 0) {
+                alert("Product is out of stock.");
+                return;
+            }
+
             showSellingOptions(product.id);
         });
 
