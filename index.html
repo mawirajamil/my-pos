@@ -1097,8 +1097,9 @@ document.getElementById("productForm").addEventListener("submit", function(event
         return;
     }
 
-    let file = document.getElementById("photo").files[0];
-
+    let galleryFile = document.getElementById("photo").files[0];
+let cameraFile = document.getElementById("photoCamera").files[0];
+let file = cameraFile || galleryFile;
     function saveProduct(photo) {
         if (existing) {
             existing.name = name;
