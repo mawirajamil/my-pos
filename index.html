@@ -448,6 +448,27 @@ button {
     </div>
 
     <h2>STOCK GROUPS</h2>
+    <div class="form-box">
+
+    <form id="stockGroupForm">
+
+        <label>Stock Group Name</label>
+        <input type="text" id="groupName" placeholder="e.g. Aroma 1kg" required>
+
+        <label>Base Stock Unit</label>
+        <input type="text" id="groupUnit" placeholder="e.g. Pieces, Litres" required>
+
+        <label>Opening Stock Quantity</label>
+        <input type="number" id="groupQuantity" min="0" step="any" required>
+
+        <label>Total Cost of Opening Stock (KSh)</label>
+        <input type="number" id="groupTotalCost" min="0" step="any" required>
+
+        <button type="submit">SAVE STOCK GROUP</button>
+
+    </form>
+
+    </div>
     <h2>REGISTERED PRODUCTS</h2>
 
     <div id="managementProducts"></div>
