@@ -465,9 +465,12 @@ button {
 
 // DATA STORAGE
 
+// DATA STORAGE
+
 let products = JSON.parse(localStorage.getItem("myPOSProducts") || "[]");
 let cart = [];
 let sales = JSON.parse(localStorage.getItem("myPOSSales") || "[]");
+let stockGroups = JSON.parse(localStorage.getItem("myPOSStockGroups") || "[]");
 
 function saveProducts() {
     localStorage.setItem("myPOSProducts", JSON.stringify(products));
@@ -475,6 +478,10 @@ function saveProducts() {
 
 function saveSales() {
     localStorage.setItem("myPOSSales", JSON.stringify(sales));
+}
+
+function saveStockGroups() {
+    localStorage.setItem("myPOSStockGroups", JSON.stringify(stockGroups));
 }
 
 function money(amount) {
