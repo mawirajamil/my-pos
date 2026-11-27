@@ -851,16 +851,31 @@ function showSellingOptions(id) {
     });
 }
 
-// ADD PRODUCT TO CART
+//  PRODUCT TO CART
 
 function addProduct(id, optionIndex = 0, quantityToAdd = 1) {
     let product = products.find(function(p) {
         return p.id === id;
     });
 
-    if (!product || product.stock <= 0) {
-        alert("Product is out of stock.");
-        return;
+    if (!product) {
+    alert("Product not found.");
+    return;
+}
+
+let availableStock = product.stock;
+
+if (product.stockGroupId) {
+    let group = stockGroups.find(function(g) {
+        return g.id == product.stockGroupId;
+    });
+
+    availableStock = group ? group.quantity : 0;
+}
+
+if (availableStock <= 0) {
+    alert("Product is out of stock.");
+    return;
     }
 
     let options = product.sellingOptions || [{
@@ -882,19 +897,31 @@ function addProduct(id, optionIndex = 0, quantityToAdd = 1) {
     }
 
     let reservedStock = cart.reduce(function(total, item) {
-        if (item.id === id) {
+    let cartProduct = products.find(function(p) {
+        return p.id == item.id;
+    });
+
+    if (!cartProduct) return total;
+
+    if (product.stockGroupId) {
+        if (cartProduct.stockGroupId == product.stockGroupId) {
             return total + (item.baseQuantity * item.quantity);
         }
-        return total;
-    }, 0);
+    } else {
+        if (cartProduct.id == product.id) {
+            return total + (item.baseQuantity * item.quantity);
+        }
+    }
+
+    return total;
+}, 0);
 
     let totalStockToAdd = option.quantity * quantityToAdd;
 
-    if (reservedStock + totalStockToAdd > product.stock) {
-        alert("Not enough stock available.");
-        return;
-    }
-
+    if (reservedStock + totalStockToAdd > availableStock) {
+    alert("Not enough stock available.");
+    return;
+}
     let cartKey = id + "-" + optionIndex;
 
     let existing = cart.find(function(item) {
