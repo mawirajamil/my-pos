@@ -1420,6 +1420,7 @@ function editProduct(id) {
     });
 
     if (!product) return;
+    loadStockGroupOptions();
 
     document.getElementById("productId").value = product.id;
     document.getElementById("name").value = product.name;
