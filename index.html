@@ -469,8 +469,6 @@ button {
 
 // DATA STORAGE
 
-// DATA STORAGE
-
 let products = JSON.parse(localStorage.getItem("myPOSProducts") || "[]");
 let cart = [];
 let sales = JSON.parse(localStorage.getItem("myPOSSales") || "[]");
@@ -486,6 +484,20 @@ function saveSales() {
 
 function saveStockGroups() {
     localStorage.setItem("myPOSStockGroups", JSON.stringify(stockGroups));
+}
+function loadStockGroupOptions() {
+    let select = document.getElementById("stockGroup");
+
+    select.innerHTML = '<option value="">Use separate product stock</option>';
+
+    stockGroups.forEach(function(group) {
+        let option = document.createElement("option");
+
+        option.value = group.id;
+        option.textContent = group.name;
+
+        select.appendChild(option);
+    });
 }
 
 function money(amount) {
