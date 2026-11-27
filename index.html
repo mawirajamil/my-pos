@@ -1544,29 +1544,59 @@ function payNow() {
         return;
     }
 
-    // Calculate total stock required for each product
-    let stockRequirements = {};
+// Calculate total stock required
+let stockRequirements = {};
 
-    cart.forEach(function(item) {
-        let quantityToDeduct =
-            (item.baseQuantity || 1) * item.quantity;
-
-        stockRequirements[item.id] =
-            (stockRequirements[item.id] || 0) + quantityToDeduct;
+cart.forEach(function(item) {
+    let product = products.find(function(p) {
+        return p.id == item.id;
     });
 
-    // Check stock before completing the sale
-    for (let id in stockRequirements) {
-        let product = products.find(function(p) {
-            return p.id === Number(id);
+    if (!product) return;
+
+    let quantityToDeduct =
+        (item.baseQuantity || 1) * item.quantity;
+
+    let key = product.stockGroupId
+        ? "group_" + product.stockGroupId
+        : "product_" + product.id;
+
+    if (!stockRequirements[key]) {
+        stockRequirements[key] = {
+            quantity: 0,
+            product: product,
+            stockGroupId: product.stockGroupId || ""
+        };
+    }
+
+    stockRequirements[key].quantity += quantityToDeduct;
+});
+
+// Check stock before completing the sale
+for (let key in stockRequirements) {
+    let requirement = stockRequirements[key];
+
+    if (requirement.stockGroupId) {
+        let group = stockGroups.find(function(g) {
+            return g.id == requirement.stockGroupId;
         });
 
-        if (!product || product.stock < stockRequirements[id]) {
+        if (!group || group.quantity < requirement.quantity) {
+            alert("Insufficient shared stock for " +
+                requirement.product.name);
+            return;
+        }
+
+        } else {
+        if (requirement.product.stock < requirement.quantity) {
             alert("Insufficient stock for " +
-                (product ? product.name : "a product"));
+                requirement.product.name);
             return;
         }
     }
+}
+
+let change = payment - total;
 
     let change = payment - total;
 
