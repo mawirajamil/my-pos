@@ -553,6 +553,7 @@ function createStockGroup(event) {
 
     alert("Stock group saved successfully.");
     }
+    document.getElementById("stockGroupForm").addEventListener("submit", createStockGroup);
 
 function money(amount) {
     return Number(amount).toFixed(2);
