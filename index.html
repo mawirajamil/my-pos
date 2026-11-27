@@ -1015,22 +1015,45 @@ function changeQuantity(cartKey, amount) {
         return;
     }
 
-    // Calculate all stock currently reserved for this product
-    let reservedStock = cart.reduce(function(total, cartItem) {
-        if (cartItem.id === product.id) {
+    // Calculate stock reserved by products sharing the same stock group
+let reservedStock = cart.reduce(function(total, cartItem) {
+    let cartProduct = products.find(function(p) {
+        return p.id === cartItem.id;
+    });
+
+    if (!cartProduct) return total;
+
+    if (product.stockGroupId) {
+        if (cartProduct.stockGroupId == product.stockGroupId) {
             return total + (cartItem.baseQuantity * cartItem.quantity);
         }
+    } else {
+        if (cartProduct.id === product.id) {
+            return total + (cartItem.baseQuantity * cartItem.quantity);
+        }
+    }
 
-        return total;
-    }, 0);
+    return total;
+}, 0);
 
-    // Calculate stock after this quantity change
-    let newReservedStock = reservedStock +
-        (item.baseQuantity * amount);
+// Get available stock
+let availableStock = product.stock;
 
-    if (newReservedStock > product.stock) {
-        alert("Not enough stock available.");
-        return;
+if (product.stockGroupId) {
+    let group = stockGroups.find(function(g) {
+        return g.id == product.stockGroupId;
+    });
+
+    availableStock = group ? group.quantity : 0;
+}
+
+// Check stock after this quantity change
+let newReservedStock = reservedStock +
+    (item.baseQuantity * amount);
+
+if (newReservedStock > availableStock) {
+    alert("Not enough stock available.");
+    return;
     }
 
     item.quantity = newQuantity;
