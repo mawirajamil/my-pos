@@ -626,6 +626,15 @@ function displayProducts() {
     });
 
     filtered.forEach(function(product) {
+        let availableStock = product.stock;
+
+if (product.stockGroupId) {
+    let group = stockGroups.find(function(g) {
+        return g.id == product.stockGroupId;
+    });
+
+    availableStock = group ? group.quantity : 0;
+    }
         let card = document.createElement("div");
         card.className = "product-card";
         card.style.cursor = "pointer";
@@ -671,11 +680,11 @@ function displayProducts() {
             </div>
 
             <h3>${escapeHTML(product.name)}</h3>
-            <p>Stock: ${product.stock} ${escapeHTML(product.baseUnit || "")}</p>
+            <p>Stock: ${availableStock} ${escapeHTML(product.baseUnit || "")}</p>
         `;
 
         card.addEventListener("click", function() {
-            if (product.stock <= 0) {
+            if (availableStock <= 0) {
                 alert("Product is out of stock.");
                 return;
             }
@@ -685,7 +694,7 @@ function displayProducts() {
 
         area.appendChild(card);
     });
-    }
+    }l
 
 
     // SHOW SELLING OPTIONS
