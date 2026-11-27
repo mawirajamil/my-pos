@@ -521,6 +521,38 @@ function loadStockGroupOptions() {
         select.appendChild(option);
     });
 }
+function createStockGroup(event) {
+    event.preventDefault();
+
+    let name = document.getElementById("groupName").value.trim();
+    let unit = document.getElementById("groupUnit").value.trim();
+    let quantity = Number(document.getElementById("groupQuantity").value);
+    let totalCost = Number(document.getElementById("groupTotalCost").value);
+
+    if (!name || !unit || quantity < 0 || totalCost < 0) {
+        alert("Please enter valid stock group details.");
+        return;
+    }
+
+    let unitCost = quantity > 0 ? totalCost / quantity : 0;
+
+    let group = {
+        id: Date.now().toString(),
+        name: name,
+        unit: unit,
+        quantity: quantity,
+        unitCost: unitCost
+    };
+
+    stockGroups.push(group);
+
+    saveStockGroups();
+    loadStockGroupOptions();
+
+    document.getElementById("stockGroupForm").reset();
+
+    alert("Stock group saved successfully.");
+    }
 
 function money(amount) {
     return Number(amount).toFixed(2);
