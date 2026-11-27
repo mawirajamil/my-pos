@@ -1587,7 +1587,7 @@ for (let key in stockRequirements) {
             return;
         }
 
-        } else {
+    } else {
         if (requirement.product.stock < requirement.quantity) {
             alert("Insufficient stock for " +
                 requirement.product.name);
@@ -1598,16 +1598,21 @@ for (let key in stockRequirements) {
 
 let change = payment - total;
 
-    let change = payment - total;
+    // Deduct the correct quantity from shared stock or individual product stock
+for (let key in stockRequirements) {
+    let requirement = stockRequirements[key];
 
-    // Deduct the correct quantity from each product
-    for (let id in stockRequirements) {
-        let product = products.find(function(p) {
-            return p.id === Number(id);
+    if (requirement.stockGroupId) {
+        let group = stockGroups.find(function(g) {
+            return g.id == requirement.stockGroupId;
         });
 
-        product.stock -= stockRequirements[id];
+        group.quantity -= requirement.quantity;
+
+    } else {
+        requirement.product.stock -= requirement.quantity;
     }
+}
 
     let sale = {
         receiptNumber: "SALE-" + Date.now(),
@@ -1627,6 +1632,7 @@ let change = payment - total;
     sales.push(sale);
 
     saveProducts();
+    saveStockGroups();
     saveSales();
 
     cart = [];
