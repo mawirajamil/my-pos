@@ -469,6 +469,29 @@ button {
     </form>
 
     </div>
+    <h2>STOCK ADJUSTMENT</h2>
+    <div class="form-box">
+    <form id="stockAdjustmentForm">
+
+        <label>Select Stock Group</label>
+        <select id="adjustStockGroup" required>
+            <option value="">Select stock group</option>
+        </select>
+
+        <label>Adjustment Type</label>
+        <select id="adjustmentType" required>
+            <option value="add">Add Stock</option>
+            <option value="remove">Remove Stock</option>
+        </select>
+
+        <label>Quantity</label>
+        <input type="number" id="adjustmentQuantity"
+            min="0.01" step="any" required>
+
+        <button type="submit">UPDATE STOCK</button>
+
+    </form>
+    </div>
     <h2>REGISTERED PRODUCTS</h2>
 
     <div id="managementProducts"></div>
