@@ -1959,6 +1959,26 @@ function displayDashboard() {
     let totalToday = todaysSales.reduce(
         (sum, sale) => sum + Number(sale.total || 0), 0
     );
+    // Calculate profit from a sale
+function calculateSaleProfit(sale) {
+    return (sale.items || []).reduce(function(sum, item) {
+        let cost = Number(item.buyPrice) || 0;
+        let sellingPrice = Number(item.sellPrice) || 0;
+        let quantity = Number(item.quantity) || 0;
+
+        return sum + (sellingPrice - cost) * quantity;
+    }, 0);
+}
+
+// Today's profit
+let todayProfit = todaysSales.reduce(function(sum, sale) {
+    return sum + calculateSaleProfit(sale);
+}, 0);
+
+// Total profit from all sales
+let totalProfit = sales.reduce(function(sum, sale) {
+    return sum + calculateSaleProfit(sale);
+}, 0);
 
     let stockValue = products.reduce(function(sum, product) {
     if (product.stockGroupId) return sum;
@@ -1975,6 +1995,11 @@ stockValue += stockGroups.reduce(function(sum, group) {
 }, 0);
 
     document.getElementById("todaySales").textContent = money(totalToday);
+    document.getElementById("todayProfit").textContent =
+    money(todayProfit);
+
+document.getElementById("totalProfit").textContent =
+    money(totalProfit);
 
     document.getElementById("totalProducts").textContent =
         products.length;
