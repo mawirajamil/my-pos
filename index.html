@@ -532,18 +532,23 @@ function saveStockGroups() {
 }
 function loadStockGroupOptions() {
     let select = document.getElementById("stockGroup");
+    let adjustSelect = document.getElementById("adjustStockGroup");
 
     select.innerHTML = '<option value="">Use separate product stock</option>';
+    adjustSelect.innerHTML = '<option value="">Select stock group</option>';
 
     stockGroups.forEach(function(group) {
-        let option = document.createElement("option");
+        let option1 = document.createElement("option");
+        option1.value = group.id;
+        option1.textContent = group.name;
+        select.appendChild(option1);
 
-        option.value = group.id;
-        option.textContent = group.name;
-
-        select.appendChild(option);
+        let option2 = document.createElement("option");
+        option2.value = group.id;
+        option2.textContent = group.name;
+        adjustSelect.appendChild(option2);
     });
-}
+        }
 function createStockGroup(event) {
     event.preventDefault();
 
@@ -577,6 +582,45 @@ function createStockGroup(event) {
     alert("Stock group saved successfully.");
     }
     document.getElementById("stockGroupForm").addEventListener("submit", createStockGroup);
+    function adjustStock(event) {
+    event.preventDefault();
+
+    let groupId = document.getElementById("adjustStockGroup").value;
+    let type = document.getElementById("adjustmentType").value;
+    let quantity = Number(document.getElementById("adjustmentQuantity").value);
+
+    let group = stockGroups.find(function(g) {
+        return g.id == groupId;
+    });
+
+    if (!group || !Number.isFinite(quantity) || quantity <= 0) {
+        alert("Please enter valid stock adjustment details.");
+        return;
+    }
+
+    if (type === "remove" && quantity > group.quantity) {
+        alert("You cannot remove more stock than is available.");
+        return;
+    }
+
+    if (type === "add") {
+        group.quantity += quantity;
+    } else {
+        group.quantity -= quantity;
+    }
+
+    saveStockGroups();
+
+    document.getElementById("stockAdjustmentForm").reset();
+
+    displayProducts();
+    displayManagementProducts();
+    displayDashboard();
+
+    alert("Stock updated successfully.");
+}
+
+document.getElementById("stockAdjustmentForm").addEventListener("submit", adjustStock);
 
 function money(amount) {
     return Number(amount).toFixed(2);
