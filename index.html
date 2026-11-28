@@ -1531,6 +1531,14 @@ function editProduct(id) {
 // DELETE PRODUCT
 
 function deleteProduct(id) {
+    let product = products.find(function(p) {
+    return p.id === id;
+});
+
+if (product && product.stockGroupId) {
+    alert("This product belongs to a shared stock group. Deletion is restricted.");
+    return;
+    }
     if (!confirm("Delete this product?")) return;
 
     products = products.filter(function(p) {
