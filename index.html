@@ -1418,6 +1418,14 @@ function displayManagementProducts() {
 
         let stock = Number(product.stock) || 0;
 
+if (product.stockGroupId) {
+    let group = stockGroups.find(function(g) {
+        return g.id == product.stockGroupId;
+    });
+
+    stock = group ? Number(group.quantity) || 0 : 0;
+    }
+
         let stockStatus = stock <= 0
             ? "<strong style='color:#c62828'>OUT OF STOCK</strong>"
             : "<strong style='color:#176B45'>IN STOCK</strong>";
