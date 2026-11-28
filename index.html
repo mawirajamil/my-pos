@@ -761,7 +761,7 @@ if (product.stockGroupId) {
 
         area.appendChild(card);
     });
-    }l
+    }
 
 
     // SHOW SELLING OPTIONS
@@ -1014,7 +1014,11 @@ if (availableStock <= 0) {
             optionName: option.name,
             baseUnit: product.baseUnit || "",
             baseQuantity: option.quantity,
-            buyPrice: product.buyPrice,
+            buyPrice: product.stockGroupId
+    ? (stockGroups.find(function(g) {
+        return g.id == product.stockGroupId;
+    }) || {}).unitCost || 0
+    : product.buyPrice,
             sellPrice: option.price,
             quantity: quantityToAdd
         });
