@@ -1889,12 +1889,19 @@ function displayDashboard() {
         (sum, sale) => sum + Number(sale.total || 0), 0
     );
 
-    let stockValue = products.reduce(
-        (sum, product) =>
-            sum + (Number(product.buyPrice) || 0) *
-            (Number(product.stock) || 0),
-        0
-    );
+    let stockValue = products.reduce(function(sum, product) {
+    if (product.stockGroupId) return sum;
+
+    return sum +
+        (Number(product.buyPrice) || 0) *
+        (Number(product.stock) || 0);
+}, 0);
+
+stockValue += stockGroups.reduce(function(sum, group) {
+    return sum +
+        (Number(group.unitCost) || 0) *
+        (Number(group.quantity) || 0);
+}, 0);
 
     document.getElementById("todaySales").textContent = money(totalToday);
 
